@@ -61,6 +61,87 @@ banner() {
     echo ""
 }
 
+# --- yay ---
+ensure_yay() {
+    if command -v yay &>/dev/null; then
+        success "YAY ya esta instalado."
+        return
+    fi
+
+    info "instalando YAY..."
+    sudo pacman -S --needed --noconfirm git base-devel
+    local tmpdir
+    tmpdir=$(mktemp -d)
+    git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay-bin"
+    (cd "$tmpdir/yay-bin" && makepkg -si --noconfirm)
+    rm -rf "$tmpdir"
+    success "YAY instalado."
+}
+
+# --- core packages ---
+install_core() {
+    info "instalando paquetes core..."
+
+    local core_packages=(
+        # compositor + ecosystem HYPRLAND
+        hyprland
+        hyprpaper
+        hypridle
+        hyprlock
+        hyprpicker
+        xdg-desktop-portal-hyprland
+
+        # barra + launcher + notificaciones
+        waybar
+        rofi-wayland
+        swaync
+
+        # terminal + shell
+        kitty
+        fish
+        starship
+
+        # file managers
+        thunar
+        thunar-archive-plugin
+        thunar-volman
+        tumbler
+        yazi
+
+        # screenshots
+        grim
+        slurp
+        swappy
+
+        # fetch
+        fastfetch
+
+        # theming GTK/QT
+        nwg-look
+        qt5ct
+        qt6ct
+
+        # fuentes
+        ttf-jetbrains-mono-nerd
+        inter-font
+        noto-fonts
+        noto-fonts-emoji
+
+        # clipboard + utilidades de input
+        cliphist
+        wl-clipboard
+        brightnessctl
+        pamixer
+        polkit-gnome
+
+        # stow para deploy de dotfiles
+        stow
+    )
+
+    yay -S --needed --noconfirm "${core_packages[@]}"
+    success "paquetes core instalados."
+}
+
 # --- main ---
 main() {
     banner
@@ -76,8 +157,8 @@ main() {
 
     echo ""
 
-    # TODO: check/install YAY
-    # TODO: instalar paquetes core
+    ensure_yay
+    install_core
     # TODO: instalar dependencias invisibles
     # TODO: menu de modulos opcionales
     # TODO: deploy con STOW
