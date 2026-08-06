@@ -2,7 +2,7 @@
 
 dotfiles personales para arch linux + hyprland.
 
-estetica frutiger aero — glassmorphism, gradientes teal/cyan, glossy highlights.
+estetica frutiger aero 
 
 ## dependencias
 
@@ -37,13 +37,3 @@ lens/
 ├── install.sh     # instalador
 └── README.md
 ```
-
-## hardware target
-
-- GPU: NVIDIA RTX 3060 Ti
-- shell: fish
-- dual boot con windows (SSD separado)
-
-## creditos
-
-hecho a mano, paso a paso, como proyecto de aprendizaje.

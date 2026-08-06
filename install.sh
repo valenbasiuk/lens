@@ -247,6 +247,86 @@ mod_gaming() {
     success "gaming setup installation finished"
 }
 
+# --- modulo: speedrunning ---
+mod_speedrunning() {
+    info "installing WAYWALL build deps, PRISMLAUNCHER, JAVA runtimes..."
+    yay -S --needed --noconfirm \
+        base-devel \
+        cmake \
+        wayland-protocols \
+        libxkbcommon \
+        prismlauncher \
+        jre17-openjdk \
+        jre8-openjdk
+
+    success "speedrunning setup installation finished."
+}
+
+# --- modulo: streaming ---
+mod_streaming() {
+    info "installing OBS with browser source..."
+    yay -S --needed --noconfirm \
+        obs-studio-browser \
+        v4l2loopback-dkms
+
+    success "streaming setup installation finished."
+}
+
+# --- modulo: dev tools ---
+mod_devtools() {
+    info "installing DOCKER, RUST, GITHUB CLI, LAZYGIT..."
+    yay -S --needed --noconfirm \
+        docker \
+        docker-compose \
+        base-devel \
+        rustup \
+        git-lfs \
+        github-cli \
+        neovim \
+        lazygit \
+        tokei
+
+    sudo systemctl enable --now docker.service
+    sudo usermod -aG docker "$USER"
+    rustup default stable 2>/dev/null || true
+    warn "you need to re-login for the docker group to take effect."
+    success "dev tools installation finished."
+}
+
+# --- modulo: audio TUI ---
+mod_audio() {
+    info "installing CMUS, CAVA, MPD, NCMPCPP..."
+    yay -S --needed --noconfirm \
+        cmus \
+        cava \
+        mpd \
+        ncmpcpp
+
+    success "audio TUI setup installation finished."
+}
+
+# --- modulo: bluetooth y network GUI ---
+mod_btnet() {
+    info "installing BLUEMAN, NM-APPLET..."
+    yay -S --needed --noconfirm \
+        blueman \
+        network-manager-applet
+
+    sudo systemctl enable --now bluetooth.service
+    success "bluetooth and network GUI installation finished."
+}
+
+# --- modulo: theming extra ---
+mod_theming() {
+    info "installing PAPIRUS icons, BIBATA cursors, SWWW..."
+    yay -S --needed --noconfirm \
+        papirus-icon-theme \
+        bibata-cursor-theme-bin \
+        swww
+
+    success "theming extras installation finished."
+}
+
 # --- menu de modulos ---
 modules_menu() {
     echo ""
@@ -279,27 +359,100 @@ modules_menu() {
         case $choice in
             1) mod_virtualization ;;
             2) mod_gaming ;;
-            3) warn "modulo SPEEDRUNNING todavia no implementado." ;;
-            4) warn "modulo STREAMING todavia no implementado." ;;
-            5) warn "modulo DEV TOOLS todavia no implementado." ;;
-            6) warn "modulo AUDIO TUI todavia no implementado." ;;
-            7) warn "modulo BLUETOOTH/NETWORK todavia no implementado." ;;
-            8) warn "modulo THEMING EXTRA todavia no implementado." ;;
-            *) warn "opcion '$choice' no valida, salteando." ;;
+            3) mod_speedrunning ;;
+            4) mod_streaming ;;
+            5) mod_devtools ;;
+            6) mod_audio ;;
+            7) mod_btnet ;;
+            8) mod_theming ;;
+            *) warn "option '$choice' not valid, skipping." ;;
         esac
     done
+}
+
+# =============================================================================
+# STOW DEPLOY
+# =============================================================================
+
+stow_deploy() {
+    info "deploying dotfiles with STOW..."
+
+    # packages to stow — each folder in the repo that has a .config/ inside
+    local packages=(
+        hypr
+        waybar
+        fish
+        kitty
+        rofi
+        swaync
+        starship
+        fastfetch
+        yazi
+    )
+
+    for pkg in "${packages[@]}"; do
+        local pkg_dir="$REPO_DIR/$pkg"
+
+        # skip if the package dir doesn't exist or only has .gitkeep
+        if [[ ! -d "$pkg_dir" ]]; then
+            warn "$pkg: directory not found, skipping."
+            continue
+        fi
+
+        local real_files
+        real_files=$(find "$pkg_dir" -type f ! -name '.gitkeep' | head -1)
+        if [[ -z "$real_files" ]]; then
+            warn "$pkg: no config files yet, skipping."
+            continue
+        fi
+
+        # backup existing configs if they are real files/dirs (not already symlinks)
+        # stow creates symlinks in $HOME, so we check what's under .config/
+        local config_subdir
+        config_subdir=$(find "$pkg_dir/.config" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)
+
+        if [[ -n "$config_subdir" ]]; then
+            local target_name
+            target_name=$(basename "$config_subdir")
+            local target_path="$HOME/.config/$target_name"
+
+            if [[ -e "$target_path" && ! -L "$target_path" ]]; then
+                local backup="${target_path}.bak"
+                warn "$target_path already exists, backing up to $backup"
+                mv "$target_path" "$backup"
+            fi
+        fi
+
+        # special case: starship.toml lives directly in .config/ not in a subdir
+        if [[ "$pkg" == "starship" ]]; then
+            if [[ -f "$HOME/.config/starship.toml" && ! -L "$HOME/.config/starship.toml" ]]; then
+                warn "~/.config/starship.toml already exists, backing up"
+                mv "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak"
+            fi
+        fi
+
+        # run stow — target is $HOME, working dir is the repo
+        stow -d "$REPO_DIR" -t "$HOME" "$pkg" 2>/dev/null
+        if [[ $? -eq 0 ]]; then
+            success "$pkg stowed."
+        else
+            warn "$pkg: stow failed (maybe a conflict). check manually."
+        fi
+    done
+
+    success "dotfiles deployed."
 }
 
 # --- main ---
 main() {
     banner
 
-    info "esto va a instalar y configurar tu entorno completo."
-    info "asegurate de estar corriendo esto desde el directorio del repo."
+    info "this will install and configure your entire environment"
+    info "make sure you are running this from the repo directory"
     echo ""
 
-    if ! ask "continuar?"; then
-        warn "cancelado."
+    if ! ask "continue?"; then
+        warn "cancelled"
         exit 0
     fi
 
@@ -309,9 +462,9 @@ main() {
     install_core
     install_invisible
     modules_menu
-    # TODO: deploy con STOW
+    stow_deploy
 
-    success "todo listo. reinicia la sesion para aplicar los cambios."
+    success "everything ready. restart your session to apply the changes."
 }
 
 main "$@"
