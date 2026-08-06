@@ -1,0 +1,116 @@
+# =============================================================================
+# lens — yazi theme.toml
+# frutiger aero — teal/cyan palette
+# =============================================================================
+
+[manager]
+cwd = { fg = "#4dd0e1" }
+
+# hovered item
+hovered = { fg = "#002b36", bg = "#00bcd4", bold = true }
+preview_hovered = { underline = true }
+
+# find highlight
+find_keyword = { fg = "#fff176", bold = true }
+find_position = { fg = "#80cbc4", italic = true }
+
+# marker (selected indicator)
+marker_selected = { fg = "#00bcd4", bg = "#00bcd4" }
+marker_copied   = { fg = "#81c784", bg = "#81c784" }
+marker_cut      = { fg = "#e57373", bg = "#e57373" }
+
+# tab
+tab_active   = { fg = "#002b36", bg = "#00bcd4" }
+tab_inactive = { fg = "#80cbc4", bg = "#004d59" }
+tab_width    = 1
+
+# border
+border_symbol = "│"
+border_style  = { fg = "#006064" }
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#004d59", bg = "#004d59" }
+
+# status bar segments
+mode_normal = { fg = "#002b36", bg = "#00bcd4", bold = true }
+mode_select = { fg = "#002b36", bg = "#fff176", bold = true }
+mode_unset  = { fg = "#002b36", bg = "#e57373", bold = true }
+
+progress_label  = { fg = "#e0f7fa", bold = true }
+progress_normal = { fg = "#004d59", bg = "#003340" }
+progress_error  = { fg = "#e57373", bg = "#003340" }
+
+permissions_t = { fg = "#00bcd4" }
+permissions_r = { fg = "#fff176" }
+permissions_w = { fg = "#e57373" }
+permissions_x = { fg = "#81c784" }
+permissions_s = { fg = "#80cbc4" }
+
+[input]
+border   = { fg = "#00bcd4" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#00bcd4" }
+active   = { fg = "#00bcd4" }
+inactive = {}
+
+[completion]
+border   = { fg = "#00bcd4" }
+active   = { bg = "#004d59" }
+inactive = {}
+
+icon_file    = ""
+icon_folder  = ""
+icon_command = ""
+
+[tasks]
+border  = { fg = "#00bcd4" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#003340" }
+cand            = { fg = "#4dd0e1" }
+rest            = { fg = "#006064" }
+desc            = { fg = "#80cbc4" }
+separator       = "  "
+separator_style = { fg = "#004d59" }
+
+[help]
+on      = { fg = "#00bcd4" }
+run     = { fg = "#80cbc4" }
+desc    = { fg = "#b2dfdb" }
+hovered = { bg = "#004d59", bold = true }
+footer  = { fg = "#e0f7fa", bg = "#003340" }
+
+[filetype]
+rules = [
+    # images
+    { mime = "image/*", fg = "#ce93d8" },
+
+    # videos
+    { mime = "video/*", fg = "#4fc3f7" },
+
+    # audio
+    { mime = "audio/*", fg = "#fff176" },
+
+    # archives
+    { mime = "application/zip", fg = "#e57373" },
+    { mime = "application/gzip", fg = "#e57373" },
+    { mime = "application/x-tar", fg = "#e57373" },
+    { mime = "application/x-7z-compressed", fg = "#e57373" },
+    { mime = "application/x-rar", fg = "#e57373" },
+
+    # documents
+    { mime = "application/pdf", fg = "#ef9a9a" },
+    { mime = "application/*doc*", fg = "#81d4fa" },
+
+    # fallback
+    { name = "*", fg = "#b2dfdb" },
+    { name = "*/", fg = "#4dd0e1" }
+]

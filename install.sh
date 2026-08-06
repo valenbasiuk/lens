@@ -49,38 +49,44 @@ ask() {
 banner() {
     echo ""
     echo -e "${CYAN}"
-    echo "  ██╗     ███████╗███╗   ██╗███████╗"
-    echo "  ██║     ██╔════╝████╗  ██║██╔════╝"
-    echo "  ██║     █████╗  ██╔██╗ ██║███████╗"
-    echo "  ██║     ██╔══╝  ██║╚██╗██║╚════██║"
-    echo "  ███████╗███████╗██║ ╚████║███████║"
-    echo "  ╚══════╝╚══════╝╚═╝  ╚═══╝╚══════╝"
+    echo "      ___       ___           ___           ___     "
+    echo "     /\__\     /\  \         /\__\         /\  \    "
+    echo "    /:/  /    /::\  \       /::|  |       /::\  \   "
+    echo "   /:/  /    /:/\:\  \     /:|:|  |      /:/\ \  \  "
+    echo "  /:/  /    /::\~\:\  \   /:/|:|  |__   _\:\~\ \  \ "
+    echo " /:/__/    /:/\:\ \:\__\ /:/ |:| /\__\ /\ \:\ \ \__\"
+    echo " \:\  \    \:\~\:\ \/__/ \/__|:|/:/  / \:\ \:\ \/__/"
+    echo "  \:\  \    \:\ \:\__\       |:/:/  /   \:\ \:\__\  "
+    echo "   \:\  \    \:\ \/__/       |::/  /     \:\/:/  /  "
+    echo "    \:\__\    \:\__\         /:/  /       \::/  /   "
+    echo "     \/__/     \/__/         \/__/         \/__/    "
+
     echo -e "${NC}"
-    echo -e "  ${BOLD}dotfiles para arch linux + hyprland${NC}"
-    echo -e "  estetica frutiger aero"
+    echo -e "  ${BOLD}dotfiles for arch linux + hyprland${NC}"
+    echo -e "   w frutiger aero aesthetic"
     echo ""
 }
 
 # --- yay ---
 ensure_yay() {
     if command -v yay &>/dev/null; then
-        success "YAY ya esta instalado."
+        success "yay is already installed."
         return
     fi
 
-    info "instalando YAY..."
+    info "installing yay..."
     sudo pacman -S --needed --noconfirm git base-devel
     local tmpdir
     tmpdir=$(mktemp -d)
     git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay-bin"
     (cd "$tmpdir/yay-bin" && makepkg -si --noconfirm)
     rm -rf "$tmpdir"
-    success "YAY instalado."
+    success "yay installed."
 }
 
 # --- core packages ---
 install_core() {
-    info "instalando paquetes core..."
+    info "installing core packages..."
 
     local core_packages=(
         # compositor + ecosystem HYPRLAND
@@ -293,7 +299,7 @@ mod_devtools() {
     success "dev tools installation finished."
 }
 
-# --- modulo: audio TUI ---
+# --- module: audio TUI ---
 mod_audio() {
     info "installing CMUS, CAVA, MPD, NCMPCPP..."
     yay -S --needed --noconfirm \
@@ -305,7 +311,7 @@ mod_audio() {
     success "audio TUI setup installation finished."
 }
 
-# --- modulo: bluetooth y network GUI ---
+# --- module: bluetooth y network GUI ---
 mod_btnet() {
     info "installing BLUEMAN, NM-APPLET..."
     yay -S --needed --noconfirm \
@@ -316,7 +322,7 @@ mod_btnet() {
     success "bluetooth and network GUI installation finished."
 }
 
-# --- modulo: theming extra ---
+# --- module: theming extra ---
 mod_theming() {
     info "installing PAPIRUS icons, BIBATA cursors, SWWW..."
     yay -S --needed --noconfirm \
@@ -348,10 +354,10 @@ modules_menu() {
     echo ""
 
     local choices
-    read -rp "$(echo -e "${CYAN}[?]${NC} modulos: ")" choices
+    read -rp "$(echo -e "${CYAN}[?]${NC} modules: ")" choices
 
     if [[ -z "$choices" ]]; then
-        info "ningun modulo seleccionado, salteando."
+        info "no modules selected, skipping."
         return
     fi
 
@@ -368,79 +374,6 @@ modules_menu() {
             *) warn "option '$choice' not valid, skipping." ;;
         esac
     done
-}
-
-# =============================================================================
-# STOW DEPLOY
-# =============================================================================
-
-stow_deploy() {
-    info "deploying dotfiles with STOW..."
-
-    # packages to stow — each folder in the repo that has a .config/ inside
-    local packages=(
-        hypr
-        waybar
-        fish
-        kitty
-        rofi
-        swaync
-        starship
-        fastfetch
-        yazi
-    )
-
-    for pkg in "${packages[@]}"; do
-        local pkg_dir="$REPO_DIR/$pkg"
-
-        # skip if the package dir doesn't exist or only has .gitkeep
-        if [[ ! -d "$pkg_dir" ]]; then
-            warn "$pkg: directory not found, skipping."
-            continue
-        fi
-
-        local real_files
-        real_files=$(find "$pkg_dir" -type f ! -name '.gitkeep' | head -1)
-        if [[ -z "$real_files" ]]; then
-            warn "$pkg: no config files yet, skipping."
-            continue
-        fi
-
-        # backup existing configs if they are real files/dirs (not already symlinks)
-        # stow creates symlinks in $HOME, so we check what's under .config/
-        local config_subdir
-        config_subdir=$(find "$pkg_dir/.config" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)
-
-        if [[ -n "$config_subdir" ]]; then
-            local target_name
-            target_name=$(basename "$config_subdir")
-            local target_path="$HOME/.config/$target_name"
-
-            if [[ -e "$target_path" && ! -L "$target_path" ]]; then
-                local backup="${target_path}.bak"
-                warn "$target_path already exists, backing up to $backup"
-                mv "$target_path" "$backup"
-            fi
-        fi
-
-        # special case: starship.toml lives directly in .config/ not in a subdir
-        if [[ "$pkg" == "starship" ]]; then
-            if [[ -f "$HOME/.config/starship.toml" && ! -L "$HOME/.config/starship.toml" ]]; then
-                warn "~/.config/starship.toml already exists, backing up"
-                mv "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak"
-            fi
-        fi
-
-        # run stow — target is $HOME, working dir is the repo
-        stow -d "$REPO_DIR" -t "$HOME" "$pkg" 2>/dev/null
-        if [[ $? -eq 0 ]]; then
-            success "$pkg stowed."
-        else
-            warn "$pkg: stow failed (maybe a conflict). check manually."
-        fi
-    done
-
-    success "dotfiles deployed."
 }
 
 # --- main ---
@@ -462,7 +395,7 @@ main() {
     install_core
     install_invisible
     modules_menu
-    stow_deploy
+    # TODO: deploy con STOW
 
     success "everything ready. restart your session to apply the changes."
 }
