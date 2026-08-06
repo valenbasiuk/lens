@@ -142,6 +142,67 @@ install_core() {
     success "paquetes core instalados."
 }
 
+# --- dependencias invisibles ---
+install_invisible() {
+    info "instalando dependencias del sistema..."
+
+    local invisible_packages=(
+        # audio
+        pipewire
+        pipewire-pulse
+        pipewire-alsa
+        wireplumber
+        playerctl          # play/pause/next desde keybinds
+        pavucontrol         # GUI mixer de audio
+
+        # red
+        networkmanager
+
+        # bluetooth base
+        bluez
+        bluez-utils
+
+        # credenciales — guarda tokens de git, passwords de wifi
+        gnome-keyring
+
+        # herramientas para scripts de waybar e hyprland IPC
+        jq                  # parseo JSON
+        socat               # comunicacion con hyprland socket
+
+        # multimedia backend
+        ffmpeg
+        imagemagick
+
+        # xdg — abrir archivos con la app correcta, crear ~/Documents etc.
+        xdg-utils
+        xdg-user-dirs
+
+        # archivos comprimidos — thunar los necesita
+        unzip
+        p7zip
+
+        # GTK layer para waybar
+        gtk-layer-shell
+
+        # notificaciones desde scripts
+        libnotify
+
+        # python — dependencia de nwg-look y otras tools GTK
+        python-gobject
+    )
+
+    yay -S --needed --noconfirm "${invisible_packages[@]}"
+
+    # habilitar servicios esenciales
+    info "habilitando servicios..."
+    sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
+    systemctl --user enable --now pipewire.service 2>/dev/null || true
+    systemctl --user enable --now pipewire-pulse.service 2>/dev/null || true
+    systemctl --user enable --now wireplumber.service 2>/dev/null || true
+
+    success "dependencias del sistema instaladas."
+}
+
 # --- main ---
 main() {
     banner
@@ -159,7 +220,7 @@ main() {
 
     ensure_yay
     install_core
-    # TODO: instalar dependencias invisibles
+    install_invisible
     # TODO: menu de modulos opcionales
     # TODO: deploy con STOW
 
