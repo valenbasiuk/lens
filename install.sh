@@ -200,7 +200,7 @@ install_invisible() {
     systemctl --user enable --now pipewire-pulse.service 2>/dev/null || true
     systemctl --user enable --now wireplumber.service 2>/dev/null || true
 
-    success "dependencias del sistema instaladas."
+    success "dependencies installation done"
 }
 
 # =============================================================================
@@ -220,8 +220,8 @@ mod_virtualization() {
 
     sudo systemctl enable --now libvirtd.service
     sudo usermod -aG libvirt "$USER"
-    warn "necesitas re-loguearte para que el grupo libvirt tome efecto."
-    success "virtualizacion instalada."
+    warn "you need to re-login for the libvirt group to take effect."
+    success "virtualization setup installation finished."
 }
 
 # --- modulo: gaming ---
@@ -230,9 +230,9 @@ mod_gaming() {
 
     # verificar que multilib esta habilitado en pacman.conf
     if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
-        warn "multilib no esta habilitado en /etc/pacman.conf"
-        warn "las librerias lib32-* no se van a poder instalar sin multilib."
-        warn "habilita multilib manualmente y vuelve a correr el instalador."
+        warn "multilib isn't enabled in /etc/pacman.conf"
+        warn "lib32-* libraries won't be installed without multilib."
+        warn "enable multilib manually and run the installer again."
     fi
 
     yay -S --needed --noconfirm \
@@ -244,27 +244,27 @@ mod_gaming() {
         lib32-mangohud \
         wine-staging
 
-    success "gaming instalado."
+    success "gaming setup installation finished"
 }
 
 # --- menu de modulos ---
 modules_menu() {
     echo ""
     echo -e "${BOLD}==========================================${NC}"
-    echo -e "${BOLD}  MODULOS OPCIONALES${NC}"
+    echo -e "${BOLD}  optional modules${NC}"
     echo -e "${BOLD}==========================================${NC}"
     echo ""
-    echo "  [1]  Virtualizacion (QEMU, KVM, VIRT-MANAGER)"
-    echo "  [2]  Gaming (STEAM, LUTRIS, WINE, GAMEMODE)"
-    echo "  [3]  Speedrunning / Minecraft (WAYWALL, PRISMLAUNCHER)"
-    echo "  [4]  Streaming / Grabacion (OBS)"
-    echo "  [5]  Dev Tools (DOCKER, RUST, GITHUB CLI)"
-    echo "  [6]  Audio TUI (CMUS, CAVA, MPD)"
-    echo "  [7]  Bluetooth y Network GUI (BLUEMAN, NM-APPLET)"
-    echo "  [8]  Theming Extra (PAPIRUS, BIBATA, SWWW)"
+    echo "  [1]  virtualization setup (QEMU, KVM, VIRT-MANAGER)"
+    echo "  [2]  overall gaming (STEAM, LUTRIS, WINE, GAMEMODE)"
+    echo "  [3]  speedrunning specifications (WAYWALL, PRISMLAUNCHER)"
+    echo "  [4]  streaming / recording (OBS)"
+    echo "  [5]  dev tools (DOCKER, RUST, GITHUB CLI)"
+    echo "  [6]  TUI audio setup (CMUS, CAVA, MPD)"
+    echo "  [7]  bluetooth and network GUI (BLUEMAN, NM-APPLET)"
+    echo "  [8]  theming extras (PAPIRUS, BIBATA, SWWW)"
     echo ""
-    echo -e "  selecciona los modulos que quieras (ej: ${CYAN}1 2 5${NC})"
-    echo -e "  o presiona ENTER para saltear todos."
+    echo -e "  select the modules you want to install (ej: ${CYAN}1 2 5${NC})"
+    echo -e "  or press ENTER to skip all."
     echo ""
 
     local choices
