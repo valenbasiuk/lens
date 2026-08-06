@@ -203,6 +203,93 @@ install_invisible() {
     success "dependencias del sistema instaladas."
 }
 
+# =============================================================================
+# MODULOS OPCIONALES
+# =============================================================================
+
+# --- modulo: virtualizacion ---
+mod_virtualization() {
+    info "instalando QEMU, KVM, VIRT-MANAGER..."
+    yay -S --needed --noconfirm \
+        qemu-full \
+        virt-manager \
+        libvirt \
+        dnsmasq \
+        virt-viewer \
+        edk2-ovmf
+
+    sudo systemctl enable --now libvirtd.service
+    sudo usermod -aG libvirt "$USER"
+    warn "necesitas re-loguearte para que el grupo libvirt tome efecto."
+    success "virtualizacion instalada."
+}
+
+# --- modulo: gaming ---
+mod_gaming() {
+    info "instalando STEAM, LUTRIS, WINE, GAMEMODE, MANGOHUD..."
+
+    # verificar que multilib esta habilitado en pacman.conf
+    if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
+        warn "multilib no esta habilitado en /etc/pacman.conf"
+        warn "las librerias lib32-* no se van a poder instalar sin multilib."
+        warn "habilita multilib manualmente y vuelve a correr el instalador."
+    fi
+
+    yay -S --needed --noconfirm \
+        steam \
+        lutris \
+        gamemode \
+        lib32-gamemode \
+        mangohud \
+        lib32-mangohud \
+        wine-staging
+
+    success "gaming instalado."
+}
+
+# --- menu de modulos ---
+modules_menu() {
+    echo ""
+    echo -e "${BOLD}==========================================${NC}"
+    echo -e "${BOLD}  MODULOS OPCIONALES${NC}"
+    echo -e "${BOLD}==========================================${NC}"
+    echo ""
+    echo "  [1]  Virtualizacion (QEMU, KVM, VIRT-MANAGER)"
+    echo "  [2]  Gaming (STEAM, LUTRIS, WINE, GAMEMODE)"
+    echo "  [3]  Speedrunning / Minecraft (WAYWALL, PRISMLAUNCHER)"
+    echo "  [4]  Streaming / Grabacion (OBS)"
+    echo "  [5]  Dev Tools (DOCKER, RUST, GITHUB CLI)"
+    echo "  [6]  Audio TUI (CMUS, CAVA, MPD)"
+    echo "  [7]  Bluetooth y Network GUI (BLUEMAN, NM-APPLET)"
+    echo "  [8]  Theming Extra (PAPIRUS, BIBATA, SWWW)"
+    echo ""
+    echo -e "  selecciona los modulos que quieras (ej: ${CYAN}1 2 5${NC})"
+    echo -e "  o presiona ENTER para saltear todos."
+    echo ""
+
+    local choices
+    read -rp "$(echo -e "${CYAN}[?]${NC} modulos: ")" choices
+
+    if [[ -z "$choices" ]]; then
+        info "ningun modulo seleccionado, salteando."
+        return
+    fi
+
+    for choice in $choices; do
+        case $choice in
+            1) mod_virtualization ;;
+            2) mod_gaming ;;
+            3) warn "modulo SPEEDRUNNING todavia no implementado." ;;
+            4) warn "modulo STREAMING todavia no implementado." ;;
+            5) warn "modulo DEV TOOLS todavia no implementado." ;;
+            6) warn "modulo AUDIO TUI todavia no implementado." ;;
+            7) warn "modulo BLUETOOTH/NETWORK todavia no implementado." ;;
+            8) warn "modulo THEMING EXTRA todavia no implementado." ;;
+            *) warn "opcion '$choice' no valida, salteando." ;;
+        esac
+    done
+}
+
 # --- main ---
 main() {
     banner
@@ -221,7 +308,7 @@ main() {
     ensure_yay
     install_core
     install_invisible
-    # TODO: menu de modulos opcionales
+    modules_menu
     # TODO: deploy con STOW
 
     success "todo listo. reinicia la sesion para aplicar los cambios."
