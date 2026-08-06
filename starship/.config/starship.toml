@@ -1,0 +1,63 @@
+# =============================================================================
+# lens — starship.toml
+# frutiger aero prompt — teal/cyan palette
+# =============================================================================
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$rust\
+$python\
+$docker_context\
+$cmd_duration\
+$line_break\
+$character"""
+
+# --- prompt character ---
+[character]
+success_symbol = "[›](bold #00bcd4)"
+error_symbol = "[›](bold #e57373)"
+
+# --- directory ---
+[directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "bold #4dd0e1"
+read_only = " ro"
+read_only_style = "#e57373"
+truncation_length = 3
+truncate_to_repo = true
+
+# --- git branch ---
+[git_branch]
+format = "on [$branch]($style) "
+style = "#81d4fa"
+
+# --- git status ---
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "#fff176"
+
+# --- command duration ---
+[cmd_duration]
+format = "took [$duration]($style) "
+style = "#80cbc4"
+min_time = 2000
+
+# --- rust ---
+[rust]
+format = "[$symbol($version)]($style) "
+symbol = "rs "
+style = "#e57373"
+
+# --- python ---
+[python]
+format = "[$symbol($version)]($style) "
+symbol = "py "
+style = "#fff176"
+
+# --- docker ---
+[docker_context]
+format = "[$symbol$context]($style) "
+symbol = "dk "
+style = "#4fc3f7"
