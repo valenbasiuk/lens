@@ -1,0 +1,15 @@
+/* =============================================================================
+   lens — rofi config.rasi
+   ============================================================================= */
+
+configuration {
+    modi:                "drun,run,window";
+    show-icons:          true;
+    display-drun:        "apps";
+    display-run:         "run";
+    display-window:      "windows";
+    drun-display-format: "{name}";
+    font:                "Inter 12";
+}
+
+@theme "~/.config/rofi/theme.rasi"

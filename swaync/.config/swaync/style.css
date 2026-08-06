@@ -1,0 +1,180 @@
+/* =============================================================================
+   lens — swaync style.css
+   frutiger aero — glass notifications with teal accents
+   ============================================================================= */
+
+/* --- control center (sidebar panel) --- */
+.control-center {
+    background: rgba(0, 43, 54, 0.82);
+    border: 1px solid rgba(0, 188, 212, 0.25);
+    border-radius: 14px;
+    color: #e0f7fa;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 8px 32px rgba(0, 40, 50, 0.5);
+    padding: 12px;
+}
+
+/* --- individual notifications --- */
+.notification-row {
+    outline: none;
+}
+
+.notification-row:focus,
+.notification-row:hover {
+    opacity: 1;
+}
+
+.notification {
+    background: rgba(0, 77, 89, 0.55);
+    border: 1px solid rgba(0, 188, 212, 0.2);
+    border-radius: 12px;
+    margin: 4px 0;
+    padding: 0;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 2px 8px rgba(0, 40, 50, 0.3);
+    transition: all 200ms ease;
+}
+
+.notification:hover {
+    background: rgba(0, 77, 89, 0.70);
+    border-color: rgba(0, 188, 212, 0.35);
+}
+
+/* --- notification content --- */
+.notification-content {
+    padding: 10px 14px;
+    background: transparent;
+}
+
+.summary {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+}
+
+.body {
+    color: rgba(224, 247, 250, 0.75);
+    font-size: 12px;
+    font-family: "Inter", sans-serif;
+}
+
+.time {
+    color: rgba(224, 247, 250, 0.45);
+    font-size: 11px;
+    font-family: "Inter", sans-serif;
+}
+
+/* --- notification image/icon --- */
+.notification-image {
+    border-radius: 8px;
+    margin: 8px;
+}
+
+.notification-default-action {
+    background: transparent;
+    border-radius: 12px;
+    padding: 0;
+}
+
+/* --- action buttons --- */
+.notification-action {
+    background: rgba(0, 188, 212, 0.2);
+    border: 1px solid rgba(0, 188, 212, 0.15);
+    border-radius: 8px;
+    color: #e0f7fa;
+    margin: 4px 2px;
+    padding: 6px 12px;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    transition: all 200ms ease;
+}
+
+.notification-action:hover {
+    background: rgba(0, 188, 212, 0.35);
+    color: #ffffff;
+}
+
+/* --- close button --- */
+.close-button {
+    background: rgba(0, 188, 212, 0.2);
+    border: none;
+    border-radius: 6px;
+    color: #e0f7fa;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 2px;
+    transition: all 200ms ease;
+}
+
+.close-button:hover {
+    background: rgba(244, 67, 54, 0.4);
+    color: #ffcdd2;
+}
+
+/* --- control center widgets --- */
+.widget-title {
+    color: #e0f7fa;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+    margin: 4px 0;
+}
+
+.widget-title > button {
+    background: rgba(0, 188, 212, 0.2);
+    border: 1px solid rgba(0, 188, 212, 0.15);
+    border-radius: 8px;
+    color: #e0f7fa;
+    padding: 4px 12px;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    transition: all 200ms ease;
+}
+
+.widget-title > button:hover {
+    background: rgba(0, 188, 212, 0.35);
+}
+
+/* --- do not disturb toggle --- */
+.widget-dnd {
+    color: #e0f7fa;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    margin: 4px 0;
+}
+
+.widget-dnd > switch {
+    background: rgba(0, 77, 89, 0.5);
+    border: 1px solid rgba(0, 188, 212, 0.2);
+    border-radius: 12px;
+}
+
+.widget-dnd > switch:checked {
+    background: rgba(0, 188, 212, 0.4);
+}
+
+.widget-dnd > switch slider {
+    background: #00bcd4;
+    border-radius: 50%;
+    min-width: 16px;
+    min-height: 16px;
+}
+
+/* --- floating notifications (popup) --- */
+.floating-notifications {
+    background: transparent;
+}
+
+.floating-notifications .notification {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 4px 24px rgba(0, 40, 50, 0.5);
+}
+
+/* --- blank window (when no notifications) --- */
+.blank-window {
+    background: transparent;
+}

@@ -1,0 +1,118 @@
+/* =============================================================================
+   lens — rofi theme.rasi
+   frutiger aero — glass panel with teal accents
+   ============================================================================= */
+
+* {
+    bg:          rgba(0, 43, 54, 0.80);
+    bg-alt:      rgba(0, 77, 89, 0.60);
+    bg-selected: rgba(0, 188, 212, 0.35);
+    fg:          #e0f7fa;
+    fg-dim:      rgba(224, 247, 250, 0.50);
+    accent:      #00bcd4;
+    urgent:      #e57373;
+
+    border-colour: rgba(0, 188, 212, 0.30);
+    background-colour: @bg;
+    foreground-colour: @fg;
+
+    font: "Inter 12";
+}
+
+/* --- window --- */
+window {
+    width:            480px;
+    border:           1px solid;
+    border-color:     @border-colour;
+    border-radius:    14px;
+    background-color: @bg;
+
+    /* glass effect */
+    transparency:     "real";
+}
+
+/* --- main container --- */
+mainbox {
+    background-color: transparent;
+    children:         [ inputbar, message, listview ];
+    spacing:          8px;
+    padding:          16px;
+}
+
+/* --- input bar --- */
+inputbar {
+    background-color: @bg-alt;
+    border-radius:    10px;
+    padding:          10px 14px;
+    spacing:          8px;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @accent;
+    font:             "Inter Bold 12";
+}
+
+entry {
+    background-color: transparent;
+    text-color:       @fg;
+    placeholder:      "search...";
+    placeholder-color: @fg-dim;
+}
+
+/* --- list --- */
+listview {
+    background-color: transparent;
+    columns:          1;
+    lines:            7;
+    spacing:          4px;
+    fixed-height:     true;
+    scrollbar:        false;
+}
+
+/* --- elements --- */
+element {
+    background-color: transparent;
+    text-color:       @fg;
+    padding:          8px 12px;
+    border-radius:    8px;
+    spacing:          10px;
+}
+
+element normal.normal {
+    background-color: transparent;
+}
+
+element selected.normal {
+    background-color: @bg-selected;
+    text-color:       #ffffff;
+}
+
+element alternate.normal {
+    background-color: transparent;
+}
+
+element-icon {
+    background-color: transparent;
+    size:             24px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+}
+
+/* --- message --- */
+message {
+    background-color: transparent;
+    border:           0;
+}
+
+textbox {
+    background-color: @bg-alt;
+    text-color:       @fg;
+    padding:          8px 12px;
+    border-radius:    8px;
+}
