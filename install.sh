@@ -98,7 +98,7 @@ install_core() {
 
         # bar + launcher + notifications
         waybar
-        rofi-wayland
+        rofi
         rofi-emoji
         swaync
 
