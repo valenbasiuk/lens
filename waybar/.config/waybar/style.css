@@ -1,50 +1,53 @@
 /* =============================================================================
    lens - waybar style
-   frutiger aero aesthetic
+   frutiger aero / windows 7 aero glass aesthetic
    ============================================================================= */
 
-/* --- fonts (inter-font installed locally via pacman, no @import needed) --- */
-
+/* --- global rules --- */
 * {
     font-family: "Inter", "JetBrainsMono Nerd Font", sans-serif;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     min-height: 0;
     padding: 0;
     margin: 0;
 }
 
-/* --- bar base: glass panel --- */
+/* --- waybar main container: frutiger aero 4-stop glass bar --- */
 window#waybar {
     background: linear-gradient(
         180deg,
-        rgba(0, 150, 167, 0.65) 0%,       /* teal top */
-        rgba(0, 77, 89, 0.55) 100%         /* deep teal bottom */
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(0, 188, 212, 0.55) 30%,
+        rgba(126, 217, 87, 0.40) 70%,
+        rgba(10, 38, 56, 0.85) 100%
     );
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #e0f7fa;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.60);
+    color: #ffffff;
 
-    /* glossy highlight - the frutiger aero signature */
+    /* glossy 3D aero glass shadow */
     box-shadow:
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.25),    /* top white line */
-        inset 0 -1px 0 0 rgba(0, 0, 0, 0.1),           /* bottom shadow */
-        0 4px 16px rgba(0, 64, 77, 0.4);                /* drop shadow */
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.35),
+        0 6px 20px rgba(0, 30, 45, 0.50);
 }
 
 /* --- tooltips --- */
 tooltip {
-    background: rgba(0, 77, 89, 0.85);
-    border: 1px solid rgba(0, 188, 212, 0.4);
-    border-radius: 8px;
-    color: #e0f7fa;
+    background: rgba(10, 38, 56, 0.90);
+    border: 1.5px solid rgba(0, 229, 255, 0.60);
+    border-radius: 10px;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.40);
 }
 
 tooltip label {
-    color: #e0f7fa;
+    color: #ffffff;
+    font-weight: 500;
 }
 
-/* --- general module styling --- */
+/* --- aero glass pills for module groups --- */
 #workspaces,
 #window,
 #clock,
@@ -52,86 +55,119 @@ tooltip label {
 #network,
 #tray,
 #custom-notification,
+#custom-settings,
 #custom-power {
-    padding: 0 12px;
-    margin: 4px 2px;
-    border-radius: 8px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(0, 150, 180, 0.25) 50%,
+        rgba(4, 28, 42, 0.45) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    padding: 2px 12px;
+    margin: 4px 3px;
+    border-radius: 10px;
     transition: all 0.2s ease;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.50),
+        0 2px 6px rgba(0, 0, 0, 0.20);
+}
+
+/* --- hover state for all modules --- */
+#workspaces:hover,
+#clock:hover,
+#pulseaudio:hover,
+#network:hover,
+#tray:hover,
+#custom-notification:hover,
+#custom-settings:hover {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.40) 0%,
+        rgba(0, 229, 255, 0.35) 50%,
+        rgba(126, 217, 87, 0.30) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.75);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.80),
+        0 0 10px rgba(0, 229, 255, 0.40);
 }
 
 /* --- workspaces --- */
 #workspaces {
-    padding: 0 4px;
+    padding: 2px 4px;
 }
 
 #workspaces button {
-    color: rgba(224, 247, 250, 0.5);
+    color: rgba(255, 255, 255, 0.70);
     padding: 2px 8px;
-    margin: 3px 2px;
-    border-radius: 6px;
-    border: none;
+    margin: 2px 2px;
+    border-radius: 7px;
+    border: 1px solid transparent;
     background: transparent;
     transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
-    background: rgba(0, 188, 212, 0.25);
-    color: #e0f7fa;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.30);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.50);
 }
 
 #workspaces button.active {
     background: linear-gradient(
-        180deg,
-        rgba(0, 188, 212, 0.5) 0%,
-        rgba(0, 151, 167, 0.4) 100%
+        135deg,
+        #7ed957 0%,
+        #00bcd4 100%
     );
     color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    font-weight: 700;
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        0 1px 4px rgba(0, 64, 77, 0.3);
+        inset 0 1px 0 rgba(255, 255, 255, 0.70),
+        0 2px 6px rgba(0, 0, 0, 0.30);
+    text-shadow: 0 1px 2px rgba(0, 40, 60, 0.60);
 }
 
 /* --- window title --- */
 #window {
-    color: rgba(224, 247, 250, 0.7);
-    font-weight: 400;
-    font-style: italic;
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 /* --- clock --- */
 #clock {
-    font-weight: 600;
+    font-weight: 700;
     color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 64, 77, 0.4);
+    text-shadow: 0 1px 3px rgba(0, 30, 50, 0.60);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(0, 188, 212, 0.40) 50%,
+        rgba(126, 217, 87, 0.30) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.65);
 }
 
 /* --- audio --- */
 #pulseaudio {
-    color: #e0f7fa;
-}
-
-#pulseaudio:hover {
-    background: rgba(0, 188, 212, 0.2);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #ffffff;
 }
 
 #pulseaudio.muted {
-    color: rgba(224, 247, 250, 0.35);
+    color: rgba(255, 255, 255, 0.40);
 }
 
 /* --- network --- */
 #network {
-    color: #e0f7fa;
-}
-
-#network:hover {
-    background: rgba(0, 188, 212, 0.2);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #ffffff;
 }
 
 #network.disconnected {
-    color: rgba(224, 247, 250, 0.35);
+    color: rgba(255, 255, 255, 0.40);
 }
 
 /* --- tray --- */
@@ -139,46 +175,31 @@ tooltip label {
     padding: 0 8px;
 }
 
-#tray > .passive {
-    -gtk-icon-effect: dim;
-}
-
-#tray > .needs-attention {
-    -gtk-icon-effect: highlight;
-}
-
 /* --- notification bell --- */
 #custom-notification {
-    color: #e0f7fa;
+    color: #7ed957;
     font-size: 14px;
-}
-
-#custom-notification:hover {
-    background: rgba(0, 188, 212, 0.2);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* --- settings button --- */
 #custom-settings {
-    color: #e0f7fa;
+    color: #00e5ff;
     font-size: 14px;
-}
-
-#custom-settings:hover {
-    background: rgba(0, 188, 212, 0.2);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* --- power button --- */
 #custom-power {
-    color: #e0f7fa;
+    color: #ff5252;
     font-size: 15px;
     padding: 0 10px;
-    margin-right: 4px;
 }
 
 #custom-power:hover {
-    background: rgba(244, 67, 54, 0.35);
-    color: #ffcdd2;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 82, 82, 0.50) 0%,
+        rgba(211, 47, 47, 0.70) 100%
+    );
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.70);
 }

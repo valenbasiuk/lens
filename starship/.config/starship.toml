@@ -16,22 +16,22 @@ $character"""
 
 # --- prompt character ---
 [character]
-success_symbol = "[›](bold #00bcd4)"
-error_symbol = "[›](bold #e57373)"
+success_symbol = "[›](bold #7ed957)"
+error_symbol = "[›](bold #ff5252)"
 
 # --- directory ---
 [directory]
 format = "[$path]($style)[$read_only]($read_only_style) "
-style = "bold #4dd0e1"
+style = "bold #00e5ff"
 read_only = " ro"
-read_only_style = "#e57373"
+read_only_style = "#ff5252"
 truncation_length = 3
 truncate_to_repo = true
 
 # --- git branch ---
 [git_branch]
 format = "on [$branch]($style) "
-style = "#81d4fa"
+style = "bold #7ed957"
 
 # --- git status ---
 [git_status]

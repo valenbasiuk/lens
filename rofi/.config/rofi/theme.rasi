@@ -1,83 +1,89 @@
 /* =============================================================================
    lens - rofi theme.rasi
-   frutiger aero - glass panel with teal accents
+   frutiger aero / windows 7 aero glass aesthetic
    ============================================================================= */
 
 * {
-    bg:          rgba(0, 43, 54, 0.80);
-    bg-alt:      rgba(0, 77, 89, 0.60);
-    bg-selected: rgba(0, 188, 212, 0.35);
-    fg:          #e0f7fa;
-    fg-dim:      rgba(224, 247, 250, 0.50);
-    accent:      #00bcd4;
-    urgent:      #e57373;
+    /* aero glass colors: glossy cyan, emerald green, crisp glass white */
+    bg-glass:        rgba(12, 38, 56, 0.82);
+    bg-header:       rgba(0, 104, 132, 0.65);
+    bg-input:        rgba(4, 28, 42, 0.75);
+    bg-selected:     rgba(0, 172, 215, 0.45);
+    
+    fg:              #ffffff;
+    fg-dim:          rgba(224, 247, 250, 0.70);
+    accent-cyan:     #00e5ff;
+    accent-green:    #7ed957;
+    urgent:          #ff5252;
 
-    border-colour: rgba(0, 188, 212, 0.30);
-    background-colour: @bg;
-    foreground-colour: @fg;
+    border-glass:    rgba(255, 255, 255, 0.55);
+    border-subtle:   rgba(0, 229, 255, 0.35);
 
-    font: "Inter 12";
+    font:            "Inter Medium 11";
 }
 
-/* --- window --- */
+/* --- main window --- */
 window {
-    width:            480px;
-    border:           1px solid;
-    border-color:     @border-colour;
-    border-radius:    14px;
-    background-color: @bg;
+    width:            520px;
+    border:           2px solid;
+    border-color:     @border-glass;
+    border-radius:    16px;
+    background-color: @bg-glass;
+    padding:          0px;
 
-    /* glass effect */
+    /* real glass transparency */
     transparency:     "real";
 }
 
-/* --- main container --- */
+/* --- container box --- */
 mainbox {
     background-color: transparent;
     children:         [ inputbar, message, listview ];
-    spacing:          8px;
+    spacing:          10px;
     padding:          16px;
 }
 
-/* --- input bar --- */
+/* --- header search bar (win7 aero style) --- */
 inputbar {
-    background-color: @bg-alt;
+    background-color: @bg-header;
+    border:           1px solid;
+    border-color:     rgba(255, 255, 255, 0.65);
     border-radius:    10px;
     padding:          10px 14px;
-    spacing:          8px;
+    spacing:          10px;
     children:         [ prompt, entry ];
 }
 
 prompt {
     background-color: transparent;
-    text-color:       @accent;
-    font:             "Inter Bold 12";
+    text-color:       @accent-green;
+    font:             "Inter Bold 11";
 }
 
 entry {
     background-color: transparent;
     text-color:       @fg;
-    placeholder:      "search...";
+    placeholder:      "search apps & settings...";
     placeholder-color: @fg-dim;
 }
 
-/* --- list --- */
+/* --- results list --- */
 listview {
     background-color: transparent;
     columns:          1;
-    lines:            7;
+    lines:            8;
     spacing:          4px;
-    fixed-height:     true;
+    fixed-height:     false;
     scrollbar:        false;
 }
 
-/* --- elements --- */
+/* --- list elements --- */
 element {
     background-color: transparent;
     text-color:       @fg;
     padding:          8px 12px;
     border-radius:    8px;
-    spacing:          10px;
+    spacing:          12px;
 }
 
 element normal.normal {
@@ -86,6 +92,8 @@ element normal.normal {
 
 element selected.normal {
     background-color: @bg-selected;
+    border:           1px solid;
+    border-color:     rgba(255, 255, 255, 0.70);
     text-color:       #ffffff;
 }
 
@@ -95,24 +103,29 @@ element alternate.normal {
 
 element-icon {
     background-color: transparent;
-    size:             24px;
+    size:             28px;
 }
 
 element-text {
     background-color: transparent;
     text-color:       inherit;
     vertical-align:   0.5;
+    font:             "Inter Medium 11";
 }
 
-/* --- message --- */
+/* --- message / text boxes --- */
 message {
     background-color: transparent;
     border:           0;
+    margin:           0px 0px 4px 0px;
 }
 
 textbox {
-    background-color: @bg-alt;
-    text-color:       @fg;
+    background-color: @bg-input;
+    border:           1px solid;
+    border-color:     @border-subtle;
+    text-color:       @accent-cyan;
     padding:          8px 12px;
     border-radius:    8px;
+    font:             "Inter 10";
 }
