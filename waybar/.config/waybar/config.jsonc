@@ -21,6 +21,7 @@
         "pulseaudio",
         "network",
         "custom/notification",
+        "custom/settings",
         "custom/power"
     ],
 
@@ -88,6 +89,13 @@
         "tooltip": false,
         "format": "",
         "on-click": "swaync-client -t -sw",
+        "escape": true
+    },
+
+    "custom/settings": {
+        "tooltip": false,
+        "format": "",
+        "on-click": "bash ~/.config/hypr/scripts/lensctl",
         "escape": true
     },
 

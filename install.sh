@@ -3,12 +3,12 @@
 # =============================================================================
 # lens installer
 # dotfiles para arch linux + hyprland
-# estetica frutiger aero
+# frutiger aero aesthetic
 # =============================================================================
 
 set -e
 
-# --- colores ---
+# --- colors ---
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
@@ -16,7 +16,7 @@ YELLOW='\033[1;33m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-# --- directorio del repo (donde esta install.sh) ---
+# --- repo directory (where install.sh lives) ---
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- helpers ---
@@ -38,7 +38,6 @@ error() {
 }
 
 ask() {
-    # ask "mensaje" -> devuelve 0 si el usuario dice y, 1 si no
     local prompt="$1"
     local reply
     read -rp "$(echo -e "${CYAN}[?]${NC} ${prompt} [y/N] ")" reply
@@ -49,47 +48,47 @@ ask() {
 banner() {
     echo ""
     echo -e "${CYAN}"
-    echo "      ___       ___           ___           ___     "
-    echo "     /\__\     /\  \         /\__\         /\  \    "
-    echo "    /:/  /    /::\  \       /::|  |       /::\  \   "
-    echo "   /:/  /    /:/\:\  \     /:|:|  |      /:/\ \  \  "
-    echo "  /:/  /    /::\~\:\  \   /:/|:|  |__   _\:\~\ \  \ "
-    echo " /:/__/    /:/\:\ \:\__\ /:/ |:| /\__\ /\ \:\ \ \__\"
-    echo " \:\  \    \:\~\:\ \/__/ \/__|:|/:/  / \:\ \:\ \/__/"
-    echo "  \:\  \    \:\ \:\__\       |:/:/  /   \:\ \:\__\  "
-    echo "   \:\  \    \:\ \/__/       |::/  /     \:\/:/  /  "
-    echo "    \:\__\    \:\__\         /:/  /       \::/  /   "
-    echo "     \/__/     \/__/         \/__/         \/__/    "
-
+    echo "  ██╗     ███████╗███╗   ██╗███████╗"
+    echo "  ██║     ██╔════╝████╗  ██║██╔════╝"
+    echo "  ██║     █████╗  ██╔██╗ ██║███████╗"
+    echo "  ██║     ██╔══╝  ██║╚██╗██║╚════██║"
+    echo "  ███████╗███████╗██║ ╚████║███████║"
+    echo "  ╚══════╝╚══════╝╚═╝  ╚═══╝╚══════╝"
     echo -e "${NC}"
-    echo -e "  ${BOLD}dotfiles for arch linux + hyprland${NC}"
-    echo -e "   w frutiger aero aesthetic"
+    echo -e "  ${BOLD}dotfiles para arch linux + hyprland${NC}"
+    echo -e "  frutiger aero aesthetic"
     echo ""
 }
 
-# --- yay ---
+# =============================================================================
+# YAY
+# =============================================================================
+
 ensure_yay() {
     if command -v yay &>/dev/null; then
-        success "yay is already installed."
+        success "YAY already installed."
         return
     fi
 
-    info "installing yay..."
+    info "installing YAY..."
     sudo pacman -S --needed --noconfirm git base-devel
     local tmpdir
     tmpdir=$(mktemp -d)
     git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay-bin"
     (cd "$tmpdir/yay-bin" && makepkg -si --noconfirm)
     rm -rf "$tmpdir"
-    success "yay installed."
+    success "YAY installed."
 }
 
-# --- core packages ---
+# =============================================================================
+# CORE PACKAGES
+# =============================================================================
+
 install_core() {
     info "installing core packages..."
 
     local core_packages=(
-        # compositor + ecosystem HYPRLAND
+        # HYPRLAND ecosystem
         hyprland
         hyprpaper
         hypridle
@@ -97,7 +96,7 @@ install_core() {
         hyprpicker
         xdg-desktop-portal-hyprland
 
-        # barra + launcher + notificaciones
+        # bar + launcher + notifications
         waybar
         rofi-wayland
         swaync
@@ -127,30 +126,33 @@ install_core() {
         qt5ct
         qt6ct
 
-        # fuentes
+        # fonts
         ttf-jetbrains-mono-nerd
         inter-font
         noto-fonts
         noto-fonts-emoji
 
-        # clipboard + utilidades de input
+        # clipboard + input utilities
         cliphist
         wl-clipboard
         brightnessctl
         pamixer
         polkit-gnome
 
-        # stow para deploy de dotfiles
+        # stow for dotfiles deploy
         stow
     )
 
     yay -S --needed --noconfirm "${core_packages[@]}"
-    success "paquetes core instalados."
+    success "core packages installed."
 }
 
-# --- dependencias invisibles ---
+# =============================================================================
+# SYSTEM DEPENDENCIES
+# =============================================================================
+
 install_invisible() {
-    info "instalando dependencias del sistema..."
+    info "installing system dependencies..."
 
     local invisible_packages=(
         # audio
@@ -158,49 +160,49 @@ install_invisible() {
         pipewire-pulse
         pipewire-alsa
         wireplumber
-        playerctl          # play/pause/next desde keybinds
-        pavucontrol         # GUI mixer de audio
+        playerctl
+        pavucontrol
 
-        # red
+        # network
         networkmanager
 
         # bluetooth base
         bluez
         bluez-utils
 
-        # credenciales — guarda tokens de git, passwords de wifi
+        # credentials - git tokens, wifi passwords
         gnome-keyring
 
-        # herramientas para scripts de waybar e hyprland IPC
-        jq                  # parseo JSON
-        socat               # comunicacion con hyprland socket
+        # waybar scripts and hyprland IPC
+        jq
+        socat
 
         # multimedia backend
         ffmpeg
         imagemagick
 
-        # xdg — abrir archivos con la app correcta, crear ~/Documents etc.
+        # xdg - open files with correct app, create ~/Documents etc
         xdg-utils
         xdg-user-dirs
 
-        # archivos comprimidos — thunar los necesita
+        # archives - thunar needs these
         unzip
         p7zip
 
-        # GTK layer para waybar
+        # GTK layer for waybar
         gtk-layer-shell
 
-        # notificaciones desde scripts
+        # notifications from scripts
         libnotify
 
-        # python — dependencia de nwg-look y otras tools GTK
+        # python - dependency for nwg-look and GTK tools
         python-gobject
     )
 
     yay -S --needed --noconfirm "${invisible_packages[@]}"
 
-    # habilitar servicios esenciales
-    info "habilitando servicios..."
+    # enable essential services
+    info "enabling services..."
     sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
     systemctl --user enable --now pipewire.service 2>/dev/null || true
     systemctl --user enable --now pipewire-pulse.service 2>/dev/null || true
@@ -210,12 +212,12 @@ install_invisible() {
 }
 
 # =============================================================================
-# MODULOS OPCIONALES
+# OPTIONAL MODULES
 # =============================================================================
 
-# --- modulo: virtualizacion ---
+# --- module: virtualization ---
 mod_virtualization() {
-    info "instalando QEMU, KVM, VIRT-MANAGER..."
+    info "installing QEMU, KVM, VIRT-MANAGER..."
     yay -S --needed --noconfirm \
         qemu-full \
         virt-manager \
@@ -230,14 +232,13 @@ mod_virtualization() {
     success "virtualization setup installation finished."
 }
 
-# --- modulo: gaming ---
+# --- module: gaming ---
 mod_gaming() {
-    info "instalando STEAM, LUTRIS, WINE, GAMEMODE, MANGOHUD..."
+    info "installing STEAM, LUTRIS, WINE, GAMEMODE, MANGOHUD..."
 
-    # verificar que multilib esta habilitado en pacman.conf
-    if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
-        warn "multilib isn't enabled in /etc/pacman.conf"
-        warn "lib32-* libraries won't be installed without multilib."
+    if ! grep -q '^\[multilib\]' /etc/pacman.conf; then
+        warn "multilib is not enabled in /etc/pacman.conf"
+        warn "lib32-* libraries will not be installed without multilib."
         warn "enable multilib manually and run the installer again."
     fi
 
@@ -253,7 +254,7 @@ mod_gaming() {
     success "gaming setup installation finished"
 }
 
-# --- modulo: speedrunning ---
+# --- module: speedrunning ---
 mod_speedrunning() {
     info "installing WAYWALL build deps, PRISMLAUNCHER, JAVA runtimes..."
     yay -S --needed --noconfirm \
@@ -268,7 +269,7 @@ mod_speedrunning() {
     success "speedrunning setup installation finished."
 }
 
-# --- modulo: streaming ---
+# --- module: streaming ---
 mod_streaming() {
     info "installing OBS with browser source..."
     yay -S --needed --noconfirm \
@@ -278,7 +279,7 @@ mod_streaming() {
     success "streaming setup installation finished."
 }
 
-# --- modulo: dev tools ---
+# --- module: dev tools ---
 mod_devtools() {
     info "installing DOCKER, RUST, GITHUB CLI, LAZYGIT..."
     yay -S --needed --noconfirm \
@@ -311,7 +312,7 @@ mod_audio() {
     success "audio TUI setup installation finished."
 }
 
-# --- module: bluetooth y network GUI ---
+# --- module: bluetooth and network GUI ---
 mod_btnet() {
     info "installing BLUEMAN, NM-APPLET..."
     yay -S --needed --noconfirm \
@@ -333,7 +334,7 @@ mod_theming() {
     success "theming extras installation finished."
 }
 
-# --- menu de modulos ---
+# --- modules menu ---
 modules_menu() {
     echo ""
     echo -e "${BOLD}==========================================${NC}"
@@ -342,14 +343,14 @@ modules_menu() {
     echo ""
     echo "  [1]  virtualization setup (QEMU, KVM, VIRT-MANAGER)"
     echo "  [2]  overall gaming (STEAM, LUTRIS, WINE, GAMEMODE)"
-    echo "  [3]  speedrunning specifications (WAYWALL, PRISMLAUNCHER)"
+    echo "  [3]  speedrunning (WAYWALL, PRISMLAUNCHER)"
     echo "  [4]  streaming / recording (OBS)"
     echo "  [5]  dev tools (DOCKER, RUST, GITHUB CLI)"
     echo "  [6]  TUI audio setup (CMUS, CAVA, MPD)"
     echo "  [7]  bluetooth and network GUI (BLUEMAN, NM-APPLET)"
     echo "  [8]  theming extras (PAPIRUS, BIBATA, SWWW)"
     echo ""
-    echo -e "  select the modules you want to install (ej: ${CYAN}1 2 5${NC})"
+    echo -e "  select modules to install (e.g. ${CYAN}1 2 5${NC})"
     echo -e "  or press ENTER to skip all."
     echo ""
 
@@ -376,7 +377,46 @@ modules_menu() {
     done
 }
 
-# --- main ---
+# =============================================================================
+# STOW DEPLOY
+# =============================================================================
+
+deploy_dotfiles() {
+    info "symlinking dotfiles with STOW..."
+
+    local packages=(hypr waybar fish kitty rofi starship fastfetch swaync yazi)
+
+    for pkg in "${packages[@]}"; do
+        if [[ -d "$REPO_DIR/$pkg" ]]; then
+            # backup existing real dirs/files (not symlinks) before stowing
+            local config_target
+            config_target=$(find "$REPO_DIR/$pkg/.config" -mindepth 1 -maxdepth 1 2>/dev/null | head -1)
+            if [[ -n "$config_target" ]]; then
+                local target_name
+                target_name=$(basename "$config_target")
+                local target_path="$HOME/.config/$target_name"
+                if [[ -e "$target_path" && ! -L "$target_path" ]]; then
+                    warn "$target_path exists, backing up to ${target_path}.bak"
+                    mv "$target_path" "${target_path}.bak"
+                fi
+            fi
+
+            stow -v -R -t "$HOME" -d "$REPO_DIR" "$pkg" 2>&1 | while read -r line; do
+                echo "    $line"
+            done
+            success "$pkg linked."
+        else
+            warn "$pkg: not found in repo, skipping."
+        fi
+    done
+
+    success "dotfiles deployed."
+}
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
 main() {
     banner
 
@@ -395,7 +435,7 @@ main() {
     install_core
     install_invisible
     modules_menu
-    # TODO: deploy con STOW
+    deploy_dotfiles
 
     success "everything ready. restart your session to apply the changes."
 }

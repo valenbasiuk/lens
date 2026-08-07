@@ -159,6 +159,17 @@ tooltip label {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+/* --- settings button --- */
+#custom-settings {
+    color: #e0f7fa;
+    font-size: 14px;
+}
+
+#custom-settings:hover {
+    background: rgba(0, 188, 212, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 /* --- power button --- */
 #custom-power {
     color: #e0f7fa;
