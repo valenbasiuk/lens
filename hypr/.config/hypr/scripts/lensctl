@@ -49,10 +49,6 @@ main_menu() {
 
 # =============================================================================
 # MOUSE SENSITIVITY
-# hyprland range: -1.0 (slowest) to 1.0 (fastest) | 0.0 = raw input
-#
-# speedrunning reference (800 DPI):
-#   -0.94 hyprland = ~32cm/360 = ~150 DPI effective (Windows 10 default cursor speed)
 # =============================================================================
 
 menu_mouse() {
@@ -60,40 +56,19 @@ menu_mouse() {
     current_sens=$(grep -oP '(?<=sensitivity = )[-0-9.]+' "$HYPR_CONF" 2>/dev/null | head -1)
     current_sens="${current_sens:-0}"
 
-    local choice
-    choice=$(printf \
-        "custom value\n-0.94  speedrunning preset (800 DPI, ~150 DPI Windows equivalent)\n-0.75  low sens gaming (800 DPI)\n-0.50  moderate low sens\n 0.00  raw input (no accel)\n 0.50  moderate high sens\n 1.00  maximum sensitivity" \
-        | rofi_menu \
-            -p "mouse sensitivity" \
-            -no-custom \
-            -mesg "current: $current_sens  |  range: -1.0 (slow) to 1.0 (fast)")
-
     local new_sens
-    case "$choice" in
-        "custom value")
-            new_sens=$(printf "" | rofi_menu \
-                -p "enter value (-1.0 to 1.0)" \
-                -mesg "current: $current_sens  |  speedrunning preset: -0.94")
-            ;;
-        "-0.94"*) new_sens="-0.94" ;;
-        "-0.75"*) new_sens="-0.75" ;;
-        "-0.50"*) new_sens="-0.50" ;;
-        " 0.00"*) new_sens="0" ;;
-        " 0.50"*) new_sens="0.50" ;;
-        " 1.00"*) new_sens="1" ;;
-        "")       return ;;
-    esac
+    new_sens=$(printf '%s' "$current_sens" | rofi_menu \
+        -p "sensitivity" \
+        -mesg "range: -1.0 to 1.0  |  accel_profile: flat  |  enter to confirm, esc to cancel")
 
-    if [[ -n "$new_sens" ]]; then
-        if [[ "$new_sens" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
-            hyprctl keyword input:sensitivity "$new_sens"
-            # only replace the sensitivity line inside the input { } block
-            # using a pattern that matches 'sensitivity = X' with leading spaces (not inside touchpad {})
-            sed -i '/^input {/,/^}/{s/^    sensitivity = .*/    sensitivity = '"$new_sens"'/}' "$HYPR_CONF"
-            notify-send "lens" "mouse sensitivity: $new_sens" -a "lensctl"
-        else
-            notify-send "lens" "invalid value: $new_sens" -a "lensctl" -u critical
-        fi
+    [[ -z "$new_sens" ]] && return
+
+    if [[ "$new_sens" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
+        hyprctl keyword input:sensitivity "$new_sens"
+        sed -i '/^input {/,/^}/{s/^    sensitivity = .*/    sensitivity = '"$new_sens"'/}' "$HYPR_CONF"
+        notify-send "lens" "sensitivity: $new_sens" -a "lensctl"
+    else
+        notify-send "lens" "valor invalido: $new_sens" -a "lensctl" -u critical
     fi
 }
 
