@@ -1,5 +1,5 @@
 # =============================================================================
-# lens — config.fish
+# lens - config.fish
 # =============================================================================
 
 # --- no greeting ---
@@ -71,7 +71,7 @@ alias hyprconf "$EDITOR ~/.config/hypr/hyprland.conf"
 alias hyprkeys "$EDITOR ~/.config/hypr/keybinds.conf"
 alias wayconf "$EDITOR ~/.config/waybar/config.jsonc"
 alias waystyle "$EDITOR ~/.config/waybar/style.css"
-alias wayreload "killall waybar; waybar & disown"
+alias wayreload "killall waybar; waybar &; disown"
 
 # --- settings panel from terminal ---
 alias settings "bash ~/.config/hypr/scripts/lensctl"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =============================================================================
-# lensctl — lens settings panel
+# lensctl - lens settings panel
 # launched from waybar button or SUPER+COMMA
 #
 # sections:
@@ -87,7 +87,9 @@ menu_mouse() {
     if [[ -n "$new_sens" ]]; then
         if [[ "$new_sens" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
             hyprctl keyword input:sensitivity "$new_sens"
-            sed -i "s/sensitivity = .*/sensitivity = $new_sens/" "$HYPR_CONF"
+            # only replace the sensitivity line inside the input { } block
+            # using a pattern that matches 'sensitivity = X' with leading spaces (not inside touchpad {})
+            sed -i '/^input {/,/^}/{s/^    sensitivity = .*/    sensitivity = '"$new_sens"'/}' "$HYPR_CONF"
             notify-send "lens" "mouse sensitivity: $new_sens" -a "lensctl"
         else
             notify-send "lens" "invalid value: $new_sens" -a "lensctl" -u critical
@@ -104,14 +106,13 @@ menu_wallpaper() {
     mkdir -p "$WALLPAPER_DIR"
 
     local wallpapers
-    mapfile -t wallpapers < <(find "$WALLPAPER_DIR" -type f \
+    mapfile -t wallpapers < <(find "$WALLPAPER_DIR" -maxdepth 1 -type f \
         \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) \
         2>/dev/null | sort)
 
     if [[ ${#wallpapers[@]} -eq 0 ]]; then
-        notify-send "lens" "no wallpapers in $WALLPAPER_DIR" \
-            -a "lensctl" -b "open folder" \
-            && thunar "$WALLPAPER_DIR" &
+        notify-send "lens" "no wallpapers found in $WALLPAPER_DIR\nadd images there and try again" -a "lensctl"
+        thunar "$WALLPAPER_DIR" &
         return
     fi
 

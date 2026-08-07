@@ -407,7 +407,7 @@ deploy_dotfiles() {
                 fi
             fi
 
-            stow -v -R -t "$HOME" -d "$REPO_DIR" "$pkg" 2>&1 | while read -r line; do
+            stow -v -R -t "$HOME" -d "$REPO_DIR" "$pkg" 2>&1 || true | while read -r line; do
                 echo "    $line"
             done
             success "$pkg linked."
