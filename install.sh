@@ -6,7 +6,7 @@
 # frutiger aero aesthetic
 # =============================================================================
 
-set -e
+set -eo pipefail
 
 # --- colors ---
 RED='\033[0;31m'
@@ -138,6 +138,12 @@ install_core() {
         brightnessctl
         pamixer
         polkit-gnome
+
+        # modern CLI tools (used in fish aliases)
+        eza
+        bat
+        ripgrep
+        zoxide
 
         # stow for dotfiles deploy
         stow
@@ -436,6 +442,17 @@ main() {
     install_invisible
     modules_menu
     deploy_dotfiles
+
+    # set fish as default shell if not already
+    if [[ "$(basename "$SHELL")" != "fish" ]]; then
+        if grep -q '/usr/bin/fish' /etc/shells; then
+            chsh -s /usr/bin/fish
+            success "fish set as default shell."
+        fi
+    fi
+
+    # initialize xdg user dirs (creates ~/Documents, ~/Pictures, etc.)
+    xdg-user-dirs-update 2>/dev/null || true
 
     success "everything ready. restart your session to apply the changes."
 }

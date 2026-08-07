@@ -2,7 +2,7 @@
 
 # =============================================================================
 # lensctl — lens settings panel
-# launched from waybar or SUPER+COMMA
+# launched from waybar button or SUPER+COMMA
 #
 # sections:
 # - mouse sensitivity
@@ -11,18 +11,18 @@
 # - wifi (nm-connection-editor)
 # - bluetooth (blueman-manager)
 # - audio (pavucontrol)
-# - display (nwg-look)
-# - quick toggles (gaps, blur, opacity)
+# - display / theming (nwg-look)
+# - quick toggles (blur, opacity, gaps, reloads)
 # =============================================================================
 
 HYPR_CONF="$HOME/.config/hypr/hyprland.conf"
 HYPR_KEYS="$HOME/.config/hypr/keybinds.conf"
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
-ROFI_CMD="rofi -dmenu -p"
+ROFI_THEME="$HOME/.config/rofi/theme.rasi"
 
-# --- colors (matching lens palette) ---
-CYAN='\033[0;36m'
-NC='\033[0m'
+rofi_menu() {
+    rofi -dmenu -theme "$ROFI_THEME" "$@"
+}
 
 # =============================================================================
 # MAIN MENU
@@ -31,59 +31,49 @@ NC='\033[0m'
 main_menu() {
     local choice
     choice=$(printf \
-        "mouse sensitivity\nwallpaper\nkeybinds\nwifi\nbluetooth\naudio\ndisplay / theming\nquick toggles\n---\nexit" \
-        | rofi -dmenu \
-            -p "lens settings" \
-            -theme "$HOME/.config/rofi/theme.rasi" \
-            -no-custom \
-            -i)
+        "mouse sensitivity\nwallpaper\nkeybinds\nwifi\nbluetooth\naudio\ndisplay / theming\nquick toggles\nexit" \
+        | rofi_menu -p "lens settings" -no-custom -i)
 
     case "$choice" in
-        "mouse sensitivity")   menu_mouse ;;
-        "wallpaper")           menu_wallpaper ;;
-        "keybinds")            menu_keybinds ;;
-        "wifi")                nm-connection-editor ;;
-        "bluetooth")           blueman-manager ;;
-        "audio")               pavucontrol ;;
-        "display / theming")   nwg-look ;;
-        "quick toggles")       menu_toggles ;;
-        "exit"|"")             exit 0 ;;
+        "mouse sensitivity")  menu_mouse ;;
+        "wallpaper")          menu_wallpaper ;;
+        "keybinds")           menu_keybinds ;;
+        "wifi")               nm-connection-editor & ;;
+        "bluetooth")          blueman-manager & ;;
+        "audio")              pavucontrol & ;;
+        "display / theming")  nwg-look & ;;
+        "quick toggles")      menu_toggles ;;
+        "exit"|"")            exit 0 ;;
     esac
 }
 
 # =============================================================================
 # MOUSE SENSITIVITY
-# equivalent to KDE's sensitivity setting
-# hyprland sensitivity range: -1.0 (slowest) to 1.0 (fastest)
-# 0.0 = no acceleration (raw 1:1)
+# hyprland range: -1.0 (slowest) to 1.0 (fastest) | 0.0 = raw input
 #
-# reference for Minecraft speedrunning:
-#   800 DPI + sensitivity -0.94 in hyprland = ~32cm/360 = ~150 DPI effective in Windows
+# speedrunning reference (800 DPI):
+#   -0.94 hyprland = ~32cm/360 = ~150 DPI effective (Windows 10 default cursor speed)
 # =============================================================================
 
 menu_mouse() {
     local current_sens
-    current_sens=$(grep 'sensitivity' "$HYPR_CONF" 2>/dev/null | head -1 | grep -oP '[-0-9.]+' | head -1)
+    current_sens=$(grep -oP '(?<=sensitivity = )[-0-9.]+' "$HYPR_CONF" 2>/dev/null | head -1)
     current_sens="${current_sens:-0}"
 
-    local presets
-    presets=$(printf \
-        "custom value\n---\n-0.94  (800 DPI + speedrunning preset, ~150 DPI Windows equivalent)\n-0.75  (800 DPI, low sens gaming)\n-0.50  (moderate low sens)\n 0.00  (no acceleration, raw input)\n 0.50  (moderate high sens)\n 1.00  (maximum sensitivity)\n---\ncurrent: $current_sens")
-
     local choice
-    choice=$(echo "$presets" | rofi -dmenu \
-        -p "mouse sensitivity" \
-        -theme "$HOME/.config/rofi/theme.rasi" \
-        -no-custom \
-        -mesg "range: -1.0 (slow) to 1.0 (fast) | current: $current_sens")
+    choice=$(printf \
+        "custom value\n-0.94  speedrunning preset (800 DPI, ~150 DPI Windows equivalent)\n-0.75  low sens gaming (800 DPI)\n-0.50  moderate low sens\n 0.00  raw input (no accel)\n 0.50  moderate high sens\n 1.00  maximum sensitivity" \
+        | rofi_menu \
+            -p "mouse sensitivity" \
+            -no-custom \
+            -mesg "current: $current_sens  |  range: -1.0 (slow) to 1.0 (fast)")
 
     local new_sens
     case "$choice" in
         "custom value")
-            new_sens=$(echo "" | rofi -dmenu \
+            new_sens=$(printf "" | rofi_menu \
                 -p "enter value (-1.0 to 1.0)" \
-                -theme "$HOME/.config/rofi/theme.rasi" \
-                -mesg "current: $current_sens | speedrunning preset: -0.94")
+                -mesg "current: $current_sens  |  speedrunning preset: -0.94")
             ;;
         "-0.94"*) new_sens="-0.94" ;;
         "-0.75"*) new_sens="-0.75" ;;
@@ -91,17 +81,14 @@ menu_mouse() {
         " 0.00"*) new_sens="0" ;;
         " 0.50"*) new_sens="0.50" ;;
         " 1.00"*) new_sens="1" ;;
-        "---"|"current:"*|"") return ;;
+        "")       return ;;
     esac
 
     if [[ -n "$new_sens" ]]; then
-        # validate it is a number in range
         if [[ "$new_sens" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
-            # apply live via hyprctl
             hyprctl keyword input:sensitivity "$new_sens"
-            # persist to hyprland.conf
             sed -i "s/sensitivity = .*/sensitivity = $new_sens/" "$HYPR_CONF"
-            notify-send "lens" "mouse sensitivity set to $new_sens" -a "lensctl"
+            notify-send "lens" "mouse sensitivity: $new_sens" -a "lensctl"
         else
             notify-send "lens" "invalid value: $new_sens" -a "lensctl" -u critical
         fi
@@ -110,38 +97,41 @@ menu_mouse() {
 
 # =============================================================================
 # WALLPAPER PICKER
-# lists images in ~/Pictures/wallpapers, applies with hyprpaper
+# lists images in ~/Pictures/wallpapers, applies with hyprpaper live
 # =============================================================================
 
 menu_wallpaper() {
     mkdir -p "$WALLPAPER_DIR"
 
     local wallpapers
-    wallpapers=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) 2>/dev/null | sort)
+    mapfile -t wallpapers < <(find "$WALLPAPER_DIR" -type f \
+        \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) \
+        2>/dev/null | sort)
 
-    if [[ -z "$wallpapers" ]]; then
-        notify-send "lens" "no wallpapers found in $WALLPAPER_DIR" -a "lensctl" -u normal
+    if [[ ${#wallpapers[@]} -eq 0 ]]; then
+        notify-send "lens" "no wallpapers in $WALLPAPER_DIR" \
+            -a "lensctl" -b "open folder" \
+            && thunar "$WALLPAPER_DIR" &
         return
     fi
 
+    local names
+    names=$(printf '%s\n' "${wallpapers[@]}" | xargs -I{} basename {})
+
     local choice
-    choice=$(echo "$wallpapers" | xargs -I{} basename {} | rofi -dmenu \
+    choice=$(echo "$names" | rofi_menu \
         -p "wallpaper" \
-        -theme "$HOME/.config/rofi/theme.rasi" \
-        -mesg "images from $WALLPAPER_DIR")
+        -mesg "$WALLPAPER_DIR  |  ${#wallpapers[@]} images found")
 
     if [[ -n "$choice" ]]; then
         local full_path="$WALLPAPER_DIR/$choice"
         if [[ -f "$full_path" ]]; then
-            # get active monitor
-            local monitor
-            monitor=$(hyprctl monitors -j | jq -r '.[0].name')
-
-            # reload hyprpaper with new wallpaper
-            hyprctl hyprpaper unload all 2>/dev/null
-            hyprctl hyprpaper preload "$full_path"
-            hyprctl hyprpaper wallpaper "$monitor,$full_path"
-
+            # apply to all connected monitors
+            while IFS= read -r monitor; do
+                hyprctl hyprpaper unload all 2>/dev/null
+                hyprctl hyprpaper preload "$full_path"
+                hyprctl hyprpaper wallpaper "$monitor,$full_path"
+            done < <(hyprctl monitors -j | jq -r '.[].name')
             notify-send "lens" "wallpaper: $choice" -a "lensctl"
         fi
     fi
@@ -149,24 +139,23 @@ menu_wallpaper() {
 
 # =============================================================================
 # KEYBIND REFERENCE
-# shows keybinds.conf in a scrollable kitty window
 # =============================================================================
 
 menu_keybinds() {
     local choice
-    choice=$(printf "view keybinds (kitty)\nedit keybinds\nhyprland.conf" | rofi -dmenu \
-        -p "keybinds" \
-        -theme "$HOME/.config/rofi/theme.rasi" \
-        -no-custom)
+    choice=$(printf \
+        "view keybinds\nedit keybinds\nedit hyprland.conf" \
+        | rofi_menu -p "keybinds" -no-custom)
 
     case "$choice" in
-        "view keybinds (kitty)")
-            kitty --title "keybinds" -e bash -c "bat --style=full $HYPR_KEYS 2>/dev/null || cat $HYPR_KEYS; read -p 'press enter to close'" &
+        "view keybinds")
+            kitty --title "keybinds" -e bash -c \
+                "bat --style=full '$HYPR_KEYS' 2>/dev/null || cat '$HYPR_KEYS'; read -p 'press enter to close'" &
             ;;
         "edit keybinds")
             kitty --title "keybinds.conf" -e "${EDITOR:-nvim}" "$HYPR_KEYS" &
             ;;
-        "hyprland.conf")
+        "edit hyprland.conf")
             kitty --title "hyprland.conf" -e "${EDITOR:-nvim}" "$HYPR_CONF" &
             ;;
     esac
@@ -174,69 +163,73 @@ menu_keybinds() {
 
 # =============================================================================
 # QUICK TOGGLES
-# live hyprctl changes for common settings
 # =============================================================================
 
 menu_toggles() {
-    local current_blur
-    current_blur=$(hyprctl getoption decoration:blur:enabled -j 2>/dev/null | jq -r '.int // 1')
+    # read live state from hyprctl where possible
+    local blur_int
+    blur_int=$(hyprctl getoption decoration:blur:enabled -j 2>/dev/null | jq -r '.int // 1')
     local blur_label
-    [[ "$current_blur" == "1" ]] && blur_label="blur: ON  (click to toggle)" || blur_label="blur: OFF (click to toggle)"
+    [[ "$blur_int" == "1" ]] && blur_label="blur      ON   toggle off" \
+                              || blur_label="blur      OFF  toggle on"
 
-    local current_opacity
-    current_opacity=$(grep 'active_opacity' "$HYPR_CONF" 2>/dev/null | head -1 | grep -oP '[0-9.]+' | head -1)
-    current_opacity="${current_opacity:-0.90}"
+    local opacity
+    opacity=$(hyprctl getoption decoration:active_opacity -j 2>/dev/null | jq -r '.float // 0.9')
+    local opacity_label
+    # truncate to 2 decimal places for comparison
+    local opacity_short
+    opacity_short=$(printf "%.2f" "$opacity" 2>/dev/null || echo "0.90")
+    [[ "$opacity_short" == "1.00" ]] \
+        && opacity_label="opacity   1.0  restore glass (0.90)" \
+        || opacity_label="opacity   $opacity_short  set opaque (1.0)"
 
-    local current_gaps
-    current_gaps=$(grep '^    gaps_out' "$HYPR_CONF" 2>/dev/null | head -1 | grep -oP '[0-9]+' | head -1)
-    current_gaps="${current_gaps:-14}"
+    local gaps_out
+    gaps_out=$(hyprctl getoption general:gaps_out -j 2>/dev/null | jq -r '.int // 14')
+    local gaps_label
+    [[ "$gaps_out" == "0" ]] \
+        && gaps_label="gaps      OFF  restore (6/14)" \
+        || gaps_label="gaps      ${gaps_out}px   toggle off"
 
     local choice
     choice=$(printf \
-        "$blur_label\nopacity: $current_opacity (set to 1.0 / restore)\ngaps: $current_gaps px (set 0 / restore)\nreload waybar\nreload hyprpaper\nrestart hyprland" \
-        | rofi -dmenu \
-            -p "quick toggles" \
-            -theme "$HOME/.config/rofi/theme.rasi" \
-            -no-custom)
+        "$blur_label\n$opacity_label\n$gaps_label\n---\nreload waybar\nreload hyprpaper\nrestart hyprland" \
+        | rofi_menu -p "quick toggles" -no-custom)
 
     case "$choice" in
-        "blur: ON"*)
+        "blur      ON"*)
             hyprctl keyword decoration:blur:enabled false
-            notify-send "lens" "blur disabled" -a "lensctl"
+            notify-send "lens" "blur off" -a "lensctl"
             ;;
-        "blur: OFF"*)
+        "blur      OFF"*)
             hyprctl keyword decoration:blur:enabled true
-            notify-send "lens" "blur enabled" -a "lensctl"
+            notify-send "lens" "blur on" -a "lensctl"
             ;;
-        "opacity:"*"set to 1.0"*|"opacity: 1"*)
-            if [[ "$current_opacity" == "1" ]]; then
-                hyprctl keyword decoration:active_opacity 0.90
-                hyprctl keyword decoration:inactive_opacity 0.85
-                notify-send "lens" "opacity restored to 0.90/0.85" -a "lensctl"
-            else
-                hyprctl keyword decoration:active_opacity 1
-                hyprctl keyword decoration:inactive_opacity 1
-                notify-send "lens" "opacity set to 1.0 (opaque)" -a "lensctl"
-            fi
+        "opacity"*"set opaque"*)
+            hyprctl keyword decoration:active_opacity 1
+            hyprctl keyword decoration:inactive_opacity 1
+            notify-send "lens" "opacity: opaque" -a "lensctl"
             ;;
-        "gaps:"*"set 0"*)
+        "opacity"*"restore glass"*)
+            hyprctl keyword decoration:active_opacity 0.90
+            hyprctl keyword decoration:inactive_opacity 0.85
+            notify-send "lens" "opacity: glass restored" -a "lensctl"
+            ;;
+        "gaps"*"toggle off"*)
             hyprctl keyword general:gaps_in 0
             hyprctl keyword general:gaps_out 0
-            notify-send "lens" "gaps removed" -a "lensctl"
+            notify-send "lens" "gaps off" -a "lensctl"
             ;;
-        "gaps:"*"restore"*)
+        "gaps"*"restore"*)
             hyprctl keyword general:gaps_in 6
             hyprctl keyword general:gaps_out 14
             notify-send "lens" "gaps restored" -a "lensctl"
             ;;
         "reload waybar")
-            killall waybar 2>/dev/null; waybar &
-            disown
+            killall waybar 2>/dev/null; waybar & disown
             notify-send "lens" "waybar reloaded" -a "lensctl"
             ;;
         "reload hyprpaper")
-            killall hyprpaper 2>/dev/null; hyprpaper &
-            disown
+            killall hyprpaper 2>/dev/null; hyprpaper & disown
             notify-send "lens" "hyprpaper reloaded" -a "lensctl"
             ;;
         "restart hyprland")
