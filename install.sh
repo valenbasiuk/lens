@@ -107,10 +107,7 @@ install_core() {
         starship
 
         # file managers
-        thunar
-        thunar-archive-plugin
-        thunar-volman
-        tumbler
+        dolphin
         yazi
 
         # screenshots
@@ -147,6 +144,13 @@ install_core() {
 
         # stow for dotfiles deploy
         stow
+
+        # editor (default $EDITOR in fish)
+        neovim
+
+        # networking + bluetooth (used by lensctl)
+        network-manager-applet
+        blueman
     )
 
     yay -S --needed --noconfirm "${core_packages[@]}"

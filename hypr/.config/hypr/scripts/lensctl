@@ -112,7 +112,7 @@ menu_wallpaper() {
 
     if [[ ${#wallpapers[@]} -eq 0 ]]; then
         notify-send "lens" "no wallpapers found in $WALLPAPER_DIR\nadd images there and try again" -a "lensctl"
-        thunar "$WALLPAPER_DIR" &
+        dolphin "$WALLPAPER_DIR" &
         return
     fi
 

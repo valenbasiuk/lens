@@ -51,7 +51,7 @@
 
     "clock": {
         "format": "{:%H:%M}",
-        "format-alt": "{:%A %d %B %Y — %H:%M}",
+        "format-alt": "{:%A %d %B %Y - %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
             "format": {
@@ -75,8 +75,8 @@
         "format-wifi": " {essid}",
         "format-ethernet": " {ifname}",
         "format-disconnected": " offline",
-        "tooltip-format-wifi": "{signalStrength}% — {ipaddr}",
-        "tooltip-format-ethernet": "{ifname} — {ipaddr}",
+        "tooltip-format-wifi": "{signalStrength}% - {ipaddr}",
+        "tooltip-format-ethernet": "{ifname} - {ipaddr}",
         "on-click": "nm-connection-editor"
     },
 
